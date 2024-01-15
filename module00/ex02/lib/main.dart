@@ -48,41 +48,30 @@ class _CalculatorState extends State<Calculator> {
         children: [
           Expanded(
             child: Padding(
-              padding: const EdgeInsets.all(24.0),
+              padding:
+                  const EdgeInsets.symmetric(vertical: 12.0, horizontal: 34.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  // Text(
-                  //   expression,
-                  //   textAlign: TextAlign.right,
-                  //   style: const TextStyle(
-                  //     fontSize: 40.0,
-                  //   ),
-                  // ),
-                  // Text(
-                  //   result,
-                  //   textAlign: TextAlign.right,
-                  //   style: const TextStyle(
-                  //     fontSize: 40.0,
-                  //   ),
-                  // ),
                   TextField(
                     controller: TextEditingController(text: expression),
                     textAlign: TextAlign.right,
                     style: const TextStyle(fontSize: 32),
                     readOnly: true,
                     decoration: const InputDecoration(
-                      border: InputBorder.none, // 밑줄을 없애는 부분
-                      // contentPadding: EdgeInsets.zero, // 내용과 상하좌우 간격을 없애는 부분
+                      border: InputBorder.none,
+                      contentPadding: EdgeInsets.zero,
                     ),
                   ),
+                  const SizedBox(height: 10),
                   TextField(
                     controller: TextEditingController(text: result),
                     textAlign: TextAlign.right,
                     style: const TextStyle(fontSize: 32),
                     readOnly: true,
                     decoration: const InputDecoration(
-                      border: InputBorder.none, // 밑줄을 없애는 부분
+                      border: InputBorder.none,
+                      contentPadding: EdgeInsets.zero,
                     ),
                   ),
                 ],
@@ -148,10 +137,10 @@ class KeyboardKey extends StatelessWidget {
       style: ElevatedButton.styleFrom(
         backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.zero, // 여기서 모서리를 제거합니다.
+          borderRadius: BorderRadius.zero,
         ),
       ),
-      onPressed: () {},
+      onPressed: () => print('button pressed :$_keyValue'),
       child: Text(
         _keyValue,
         style: const TextStyle(
