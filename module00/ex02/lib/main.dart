@@ -28,8 +28,8 @@ class Calculator extends StatefulWidget {
 }
 
 class _CalculatorState extends State<Calculator> {
-  String expression = '0';
-  String result = '0';
+  String expression = '';
+  String result = '';
 
   @override
   Widget build(BuildContext context) {
@@ -46,90 +46,95 @@ class _CalculatorState extends State<Calculator> {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Expanded(
-            child: Padding(
-              padding:
-                  const EdgeInsets.symmetric(vertical: 12.0, horizontal: 34.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  TextField(
-                    controller: TextEditingController(text: expression),
-                    textAlign: TextAlign.right,
-                    style: const TextStyle(fontSize: 32),
-                    readOnly: true,
-                    decoration: const InputDecoration(
-                      border: InputBorder.none,
-                      contentPadding: EdgeInsets.zero,
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  TextField(
-                    controller: TextEditingController(text: result),
-                    textAlign: TextAlign.right,
-                    style: const TextStyle(fontSize: 32),
-                    readOnly: true,
-                    decoration: const InputDecoration(
-                      border: InputBorder.none,
-                      contentPadding: EdgeInsets.zero,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-          Expanded(
-            child: LayoutBuilder(
-              builder: (context, constraints) {
-                double maxButtonWidth = constraints.maxWidth / 4;
-                double maxButtonHeight = constraints.maxHeight / 4;
-
-                return GridView.count(
-                  crossAxisCount: 5,
-                  padding: const EdgeInsets.all(4.0),
-                  mainAxisSpacing: 4.0,
-                  crossAxisSpacing: 4.0,
-                  childAspectRatio: maxButtonWidth / maxButtonHeight,
-                  children: <String>[
-                    '7',
-                    '8',
-                    '9',
-                    'C',
-                    'AC',
-                    '4',
-                    '5',
-                    '6',
-                    '+',
-                    '-',
-                    '1',
-                    '2',
-                    '3',
-                    'x',
-                    '/',
-                    '0',
-                    '.',
-                    '00',
-                    '=',
-                    '',
-                  ].map((key) {
-                    return GridTile(
-                      child: KeyboardKey(key),
-                    );
-                  }).toList(),
-                );
-              },
-            ),
-          ),
+          Display(expression: expression, result: result),
+          const Keyboard(),
         ],
       ),
     );
   }
 }
 
-class KeyboardKey extends StatelessWidget {
-  const KeyboardKey(this._keyValue, {Key? key}) : super(key: key);
+class Display extends StatelessWidget {
+  final String expression;
+  final String result;
 
-  final _keyValue;
+  const Display({super.key, required this.expression, required this.result});
+
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 34.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            _buildTextField(expression),
+            const SizedBox(height: 10),
+            _buildTextField(result),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTextField(String text) {
+    return TextField(
+      controller: TextEditingController(text: text.isEmpty ? '0' : text),
+      textAlign: TextAlign.right,
+      style: const TextStyle(fontSize: 32),
+      readOnly: true,
+      decoration: const InputDecoration(
+        border: InputBorder.none,
+        contentPadding: EdgeInsets.zero,
+      ),
+    );
+  }
+}
+
+class Keyboard extends StatelessWidget {
+  const Keyboard({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          double maxButtonWidth = constraints.maxWidth / 4;
+          double maxButtonHeight = constraints.maxHeight / 4;
+
+          return GridView.count(
+            crossAxisCount: 5,
+            padding: const EdgeInsets.all(4.0),
+            mainAxisSpacing: 4.0,
+            crossAxisSpacing: 4.0,
+            childAspectRatio: maxButtonWidth / maxButtonHeight,
+            children: _buildButtons(),
+          );
+        },
+      ),
+    );
+  }
+
+  List<Widget> _buildButtons() {
+    return <String>[
+      // @formatter:off
+      '7', '8', '9', 'C', 'AC',
+      '4', '5', '6', '+', '-',
+      '1', '2', '3', 'x', '/',
+      '0', '.', '00', '=', '',
+      // @formatter:on
+    ].map((key) {
+      return GridTile(
+        child: KeyboardKey(key),
+      );
+    }).toList();
+  }
+}
+
+class KeyboardKey extends StatelessWidget {
+  final String _keyValue;
+
+  const KeyboardKey(this._keyValue, {super.key});
 
   @override
   Widget build(BuildContext context) {
