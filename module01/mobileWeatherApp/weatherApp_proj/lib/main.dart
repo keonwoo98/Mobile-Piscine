@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 
 void main() {
-  runApp(const MyWeatherApp());
+  runApp(const MyApp());
 }
 
-class MyWeatherApp extends StatelessWidget {
-  const MyWeatherApp({super.key});
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
