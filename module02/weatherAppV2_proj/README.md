@@ -1,4 +1,4 @@
-# weatherappv2proj
+# weatherAppV2_proj
 
 A new Flutter project.
 
