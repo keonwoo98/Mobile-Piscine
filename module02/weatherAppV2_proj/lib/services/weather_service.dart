@@ -18,7 +18,7 @@ class WeatherService {
             .toList();
         return suggestions;
       } else {
-        return []; // 'results'가 null일 경우 빈 리스트 반환
+        return [];
       }
     } else {
       throw Exception('Failed to load city suggestions');
@@ -26,13 +26,10 @@ class WeatherService {
   }
 
   Future<Map<String, dynamic>> fetchWeatherForCity(String city) async {
-    // 예시에서는 간단한 구현으로, 실제 API에서는 도시 이름으로 직접 날씨 정보를 조회하는 기능이 제공되지 않을 수 있습니다.
-    // 실제 구현에서는 도시 이름을 기반으로 좌표를 찾고, 해당 좌표에 대한 날씨 정보를 조회하는 방식이 필요할 수 있습니다.
     final response = await http.get(Uri.parse('$geocodingBaseUrl?name=$city'));
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
-      // API 응답 구조에 따라 날씨 데이터 추출
-      return data; // 여기서는 예시로 간단히 처리합니다.
+      return data;
     } else {
       throw Exception('Failed to load weather data for $city');
     }
@@ -40,13 +37,15 @@ class WeatherService {
 
   Future<String> fetchCurrentWeather(double latitude, double longitude) async {
     final apiUrl = Uri.parse(
-        '$weatherBaseUrl?latitude=$latitude&longitude=$longitude&current_weather=true');
+        '$weatherBaseUrl?latitude=$latitude&longitude=$longitude&current_weather=true&weathercode&timezone=auto');
     final response = await http.get(apiUrl);
 
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
       final current = data['current_weather'];
-      return '${current['temperature']}°C\n${current['windspeed']} km/h';
+      final String weatherDescription =
+          WeatherCodeInterpretation(current['weathercode']).getter();
+      return '${current['temperature']}°C\n$weatherDescription\n${current['windspeed']} km/h';
     } else {
       throw Exception('Failed to load weather data');
     }
@@ -54,7 +53,7 @@ class WeatherService {
 
   Future<String> fetchTodayWeather(double latitude, double longitude) async {
     final apiUrl = Uri.parse(
-        '$weatherBaseUrl?latitude=$latitude&longitude=$longitude&hourly=temperature_2m,windspeed_10m&current_weather=true&forecast_days=1');
+        '$weatherBaseUrl?latitude=$latitude&longitude=$longitude&hourly=weathercode,temperature_2m,windspeed_10m&current_weather=true&forecast_days=1');
     final response = await http.get(apiUrl);
 
     if (response.statusCode == 200) {
@@ -65,7 +64,9 @@ class WeatherService {
           List.generate(hourly['time'].length, (index) {
         final rawTime = hourly['time'][index];
         final formattedTime = rawTime.substring(rawTime.indexOf('T') + 1);
-        return '$formattedTime: ${hourly['temperature_2m'][index]}°C, ${hourly['windspeed_10m'][index]} km/h';
+        final String weatherDescription =
+            WeatherCodeInterpretation(hourly['weathercode'][index]).getter();
+        return '$formattedTime\t\t\t\t${hourly['temperature_2m'][index]}°C\t\t\t\t$weatherDescription\t\t\t${hourly['windspeed_10m'][index]}km/h';
       });
       return weatherToday.join('\n');
     } else {
@@ -75,22 +76,64 @@ class WeatherService {
 
   Future<String> fetchWeeklyWeather(double latitude, double longitude) async {
     final apiUrl = Uri.parse(
-        '$weatherBaseUrl?latitude=$latitude&longitude=$longitude&daily=temperature_2m_max,temperature_2m_min,windspeed_10m_max&current_weather=true&timezone=auto');
+        '$weatherBaseUrl?latitude=$latitude&longitude=$longitude&daily=weathercode,temperature_2m_max,temperature_2m_min,windspeed_10m_max&current_weather=true&timezone=auto');
     final response = await http.get(apiUrl);
 
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
       final daily = data['daily'];
-
       final List<String> weatherWeekly =
           List.generate(daily['time'].length, (index) {
         final rawTime = daily['time'][index];
-        final formattedDay = rawTime.substring(rawTime.indexOf('-') + 1);
-        return '$formattedDay: 최저 ${daily['temperature_2m_min'][index]}°C, 최고 ${daily['temperature_2m_max'][index]}°C, 최대 풍속 ${daily['windspeed_10m_max'][index]} km/h';
+        final formattedDay = rawTime;
+        final String weatherDescription =
+            WeatherCodeInterpretation(daily['weathercode'][index]).getter();
+        return '$formattedDay\t\t\t\t\t\t${daily['temperature_2m_min'][index]}°C\t\t\t\t\t\t${daily['temperature_2m_max'][index]}°C\t\t\t\t\t\t$weatherDescription';
       });
       return weatherWeekly.join('\n');
     } else {
       throw Exception('Failed to load weekly weather data');
     }
+  }
+}
+
+class WeatherCodeInterpretation {
+  final int position;
+
+  WeatherCodeInterpretation(this.position);
+
+  static final Map<int, String> weatherCodes = {
+    0: 'Clear sky',
+    1: 'Mainly clear',
+    2: 'Partly cloudy',
+    3: 'Overcast',
+    45: 'Fog',
+    48: 'Depositing rime fog',
+    51: 'Drizzle: Light Intensity',
+    53: 'Drizzle: Moderate Intensity',
+    55: 'Drizzle: Intense',
+    56: 'Freezing Drizzle: Light Intensity',
+    57: 'Freezing Drizzle: Intense',
+    61: 'Rain: Slight intensity',
+    63: 'Rain: Moderate',
+    65: 'Rain: Heavy',
+    66: 'Freezing Rain: Light Intensity',
+    67: 'Freezing Rain: Heavy',
+    71: 'Snow fall: Slight',
+    73: 'Snow fall: Moderate',
+    75: 'Snow fall: Heavy',
+    77: 'Snow grains',
+    80: 'Rain showers: Slight Intensity',
+    81: 'Rain showers: Moderate',
+    82: 'Rain showers: Violent',
+    85: 'Snow showers: slight',
+    86: 'Snow showers: heavy',
+    95: 'Thunderstorm: Slight or Moderate',
+    96: 'Thunderstorm with slight hail',
+    99: 'Thunderstorm with heavy hail',
+  };
+
+  String getter() {
+    return weatherCodes[position] ?? '';
   }
 }
