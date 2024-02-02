@@ -85,7 +85,6 @@ class _MyAppBarState extends State<MyAppBar> {
           showOverlay(context);
         },
         onSubmitted: (text) async {
-          // 도시 검색 시 해당 도시 기반 날씨 정보 업데이트
           await appState.fetchWeatherForCity(text);
           if (overlayEntry != null) {
             overlayEntry?.remove();
@@ -110,7 +109,6 @@ class _MyAppBarState extends State<MyAppBar> {
       actions: [
         GestureDetector(
           onTap: () async {
-            // GPS 아이콘 탭 시 현재 위치 기반 날씨 정보 업데이트
             await appState.updateWeatherForCurrentLocation();
             textFieldController.clear();
           },
