@@ -76,48 +76,58 @@ class _MyAppBarState extends State<MyAppBar> {
     var appState = context.watch<MyAppState>();
     return AppBar(
       backgroundColor: widget.theme.colorScheme.primary,
-      title: TextField(
-        controller: textFieldController,
-        cursorColor: widget.theme.colorScheme.onPrimary,
-        style: TextStyle(color: widget.theme.colorScheme.onPrimary),
-        onChanged: (text) {
-          appState.fetchCitySuggestions(text);
-          showOverlay(context);
-        },
-        onSubmitted: (text) async {
-          await appState.fetchWeatherForCity(text);
-          if (overlayEntry != null) {
-            overlayEntry?.remove();
-            overlayEntry = null;
-          }
-        },
-        decoration: InputDecoration(
-          hintText: 'Search',
-          hintStyle: TextStyle(color: widget.theme.colorScheme.onPrimary),
-          prefixIcon:
-              Icon(Icons.search, color: widget.theme.colorScheme.onPrimary),
-          suffixIcon: GestureDetector(
-            onTap: () {
+      title: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: <Widget>[
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.only(left: 8.0),
+              child: TextField(
+                controller: textFieldController,
+                cursorColor: widget.theme.colorScheme.onPrimary,
+                style: TextStyle(color: widget.theme.colorScheme.onPrimary),
+                onChanged: (text) {
+                  appState.fetchCitySuggestions(text);
+                  showOverlay(context);
+                },
+                onSubmitted: (text) async {
+                  await appState.fetchWeatherForCity(text);
+                  if (overlayEntry != null) {
+                    overlayEntry?.remove();
+                    overlayEntry = null;
+                  }
+                },
+                decoration: InputDecoration(
+                  hintText: 'Search location',
+                  hintStyle:
+                      TextStyle(color: widget.theme.colorScheme.onPrimary),
+                  prefixIcon: Icon(Icons.search,
+                      color: widget.theme.colorScheme.onPrimary),
+                  suffixIcon: IconButton(
+                    onPressed: () {
+                      textFieldController.clear();
+                      overlayEntry?.remove();
+                      overlayEntry = null;
+                    },
+                    icon: Icon(Icons.clear,
+                        color: widget.theme.colorScheme.onPrimary),
+                  ),
+                ),
+              ),
+            ),
+          ),
+          IconButton(
+            onPressed: () async {
+              await appState.updateWeatherForCurrentLocation();
               textFieldController.clear();
-              overlayEntry?.remove();
-              overlayEntry = null;
             },
-            child: Icon(Icons.clear, color: widget.theme.colorScheme.onPrimary),
+            icon: Icon(
+              Icons.gps_fixed_rounded,
+              color: widget.theme.colorScheme.onPrimary,
+            ),
           ),
-        ),
+        ],
       ),
-      actions: [
-        GestureDetector(
-          onTap: () async {
-            await appState.updateWeatherForCurrentLocation();
-            textFieldController.clear();
-          },
-          child: Icon(
-            Icons.gps_fixed_rounded,
-            color: widget.theme.colorScheme.onPrimary,
-          ),
-        ),
-      ],
     );
   }
 }
