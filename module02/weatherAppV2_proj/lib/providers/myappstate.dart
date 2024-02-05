@@ -48,7 +48,8 @@ class MyAppState extends ChangeNotifier {
       notifyListeners();
       return;
     }
-    citySuggestions = await _weatherService.fetchCitySuggestions(query);
+    var suggestions = await _weatherService.fetchCitySuggestions(query);
+    citySuggestions = suggestions.take(5).toList();
     notifyListeners();
   }
 
