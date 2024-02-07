@@ -30,15 +30,10 @@ class MyAppState extends ChangeNotifier {
   Future<void> fetchWeatherForCity(String searchText) async {
     _resetLocationState();
     try {
-      final data = await _weatherService
-          .fetchWeatherForCity(searchText.split(',')[0].trim());
-      if (_isValidData(data)) {
-        await _updateLocationAndWeatherFromCityData(data['results'][0]);
-      } else {
-        _handleNotFoundError();
-      }
+      final result = await _weatherService.fetchWeatherForCity(searchText);
+      await _updateLocationAndWeatherFromCityData(result);
     } catch (e) {
-      _handleServiceConnectionError();
+      _handleNotFoundError();
     }
   }
 
@@ -63,10 +58,6 @@ class MyAppState extends ChangeNotifier {
     region = '';
     country = '';
     _resetErrorState();
-  }
-
-  bool _isValidData(Map<String, dynamic> data) {
-    return data['results'] != null && data['results'].isNotEmpty;
   }
 
   Future<void> _updateLocationAndWeather(
