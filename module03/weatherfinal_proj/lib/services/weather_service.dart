@@ -29,28 +29,43 @@ class WeatherService {
   }
 
   Future<Map<String, dynamic>> fetchWeatherForCity(String searchText) async {
+    final parts = searchText.split(', ');
+    final city = _capitalize(parts[0]);
+    String country = '';
+    String region = '';
+
     final Uri uri;
+
     if (searchText.contains(',')) {
-      final parts = searchText.split(', ');
-      final city = _capitalize(parts[0]);
-      final country = _capitalize(parts.last);
-      final region = parts.length > 2 ? _capitalize(parts[1]) : '';
+      country = _capitalize(parts.last);
+      region = _capitalize(parts[1]);
       uri = Uri.parse(
           '$geocodingBaseUrl?name=$city&admin1=$region&country=$country&format=json');
     } else {
-      final city = _capitalize(searchText);
       uri = Uri.parse('$geocodingBaseUrl?name=$city&format=json');
     }
+
     final response = await http.get(uri);
+
     if (response.statusCode == 200) {
       final List<dynamic> results = json.decode(response.body)['results'];
-      if (results.isNotEmpty) {
-        return results.first;
+      final List<dynamic> filteredResults = results.where((result) {
+        final bool matchesCity = _capitalize(result['name']) == city;
+        final bool matchesRegion = searchText.contains(',')
+            ? _capitalize(result['admin1']) == region
+            : true;
+        final bool matchesCountry = searchText.contains(',')
+            ? _capitalize(result['country']) == country
+            : true;
+        return matchesCity && (matchesRegion || matchesCountry);
+      }).toList();
+      if (filteredResults.isNotEmpty) {
+        return filteredResults.first;
       } else {
-        throw Exception('No matching weather data found');
+        throw Exception('No matching weather data found from $city');
       }
     } else {
-      throw Exception('Failed to load weather data');
+      throw Exception('Failed to load weather data from $city');
     }
   }
 
