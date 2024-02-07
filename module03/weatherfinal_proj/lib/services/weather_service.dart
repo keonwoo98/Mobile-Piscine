@@ -6,6 +6,9 @@ class WeatherService {
   final String geocodingBaseUrl =
       'https://geocoding-api.open-meteo.com/v1/search';
 
+  String _capitalize(String input) =>
+      input.isEmpty ? '' : '${input[0].toUpperCase()}${input.substring(1)}';
+
   Future<List<String>> fetchCitySuggestions(String query) async {
     if (query.isEmpty) return [];
     final response = await http.get(Uri.parse('$geocodingBaseUrl?name=$query'));
@@ -14,7 +17,7 @@ class WeatherService {
       if (data['results'] != null) {
         final List<String> suggestions = (data['results'] as List)
             .map<String>((result) =>
-                "${result['name']}, ${result['admin1']}, ${result['country']}")
+                '${result['name']}, ${result['admin1']}, ${result['country']}')
             .toList();
         return suggestions;
       } else {
@@ -25,13 +28,29 @@ class WeatherService {
     }
   }
 
-  Future<Map<String, dynamic>> fetchWeatherForCity(String city) async {
-    final response = await http.get(Uri.parse('$geocodingBaseUrl?name=$city'));
-    if (response.statusCode == 200) {
-      final data = json.decode(response.body);
-      return data;
+  Future<Map<String, dynamic>> fetchWeatherForCity(String searchText) async {
+    final Uri uri;
+    if (searchText.contains(',')) {
+      final parts = searchText.split(', ');
+      final city = _capitalize(parts[0]);
+      final country = _capitalize(parts.last);
+      final region = parts.length > 2 ? _capitalize(parts[1]) : '';
+      uri = Uri.parse(
+          '$geocodingBaseUrl?name=$city&admin1=$region&country=$country&format=json');
     } else {
-      throw Exception('Failed to load weather data for $city');
+      final city = _capitalize(searchText);
+      uri = Uri.parse('$geocodingBaseUrl?name=$city&format=json');
+    }
+    final response = await http.get(uri);
+    if (response.statusCode == 200) {
+      final List<dynamic> results = json.decode(response.body)['results'];
+      if (results.isNotEmpty) {
+        return results.first;
+      } else {
+        throw Exception('No matching weather data found');
+      }
+    } else {
+      throw Exception('Failed to load weather data');
     }
   }
 
