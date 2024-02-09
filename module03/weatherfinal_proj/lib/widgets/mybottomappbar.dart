@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
 
 class MyBottomAppBar extends StatelessWidget {
-  const MyBottomAppBar({super.key});
+  final ThemeData theme;
+  const MyBottomAppBar({super.key, required this.theme});
 
   @override
   Widget build(BuildContext context) {
-    return const BottomAppBar(
+    return BottomAppBar(
+      color: theme.colorScheme.background.withOpacity(0.6),
       clipBehavior: Clip.none,
-      child: TabBar(
+      child: const TabBar(
         indicator: null,
         tabs: [
           Tab(icon: Icon(Icons.wb_sunny_outlined), text: 'Currently'),

@@ -2,20 +2,21 @@ import 'package:flutter/material.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:weatherfinal_proj/services/geolocation_service.dart';
 import 'package:weatherfinal_proj/services/weather_service.dart';
+import 'package:weatherfinal_proj/models/weather_models.dart';
 
 class MyAppState extends ChangeNotifier {
   final GeolocationService _geolocationService = GeolocationService();
   final WeatherService _weatherService = WeatherService();
 
   bool geolocationPermError = false;
-  String currentWeather = 'Currently';
-  String todayWeather = 'Today';
-  String weeklyWeather = 'Weekly';
   List<String> citySuggestions = [];
   String city = '';
   String region = '';
   String country = '';
   String error = '';
+  CurrentWeather? currentWeather;
+  TodayWeather? todayWeather;
+  WeekWeather? weeklyWeather;
 
   Future<void> updateWeatherForCurrentLocation() async {
     _resetErrorState();

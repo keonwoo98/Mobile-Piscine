@@ -39,13 +39,13 @@ class _MyAppBarState extends State<MyAppBar> {
 
   OverlayEntry createOverlayEntry(BuildContext context) {
     RenderBox renderBox = context.findRenderObject() as RenderBox;
-    var size = renderBox.size;
-    var offset = renderBox.localToGlobal(Offset.zero);
+    final size = renderBox.size;
+    final offset = renderBox.localToGlobal(Offset.zero);
 
     return OverlayEntry(
       builder: (context) => Positioned(
         left: offset.dx,
-        top: offset.dy + size.height,
+        top: offset.dy + size.height / 2,
         width: size.width,
         child: Material(
           elevation: 4.0,
@@ -74,59 +74,71 @@ class _MyAppBarState extends State<MyAppBar> {
   @override
   Widget build(BuildContext context) {
     var appState = context.watch<MyAppState>();
-    return AppBar(
-      backgroundColor: widget.theme.colorScheme.primary,
-      title: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: <Widget>[
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.only(left: 8.0),
-              child: TextField(
-                controller: textFieldController,
-                cursorColor: widget.theme.colorScheme.onPrimary,
-                style: TextStyle(color: widget.theme.colorScheme.onPrimary),
-                onChanged: (text) {
-                  appState.fetchCitySuggestions(text);
-                  showOverlay(context);
-                },
-                onSubmitted: (text) async {
-                  await appState.fetchWeatherForCity(text);
-                  if (overlayEntry != null) {
-                    overlayEntry?.remove();
-                    overlayEntry = null;
-                  }
-                },
-                decoration: InputDecoration(
-                  hintText: 'Search location',
-                  hintStyle:
-                      TextStyle(color: widget.theme.colorScheme.onPrimary),
-                  prefixIcon: Icon(Icons.search,
-                      color: widget.theme.colorScheme.onPrimary),
-                  suffixIcon: IconButton(
-                    onPressed: () {
-                      textFieldController.clear();
-                      overlayEntry?.remove();
-                      overlayEntry = null;
+    return SafeArea(
+      child: Container(
+        decoration: BoxDecoration(
+          color: widget.theme.colorScheme.primary.withOpacity(0.6),
+          borderRadius: BorderRadius.circular(10.0),
+          border: Border.all(
+            color: widget.theme.colorScheme.primary.withOpacity(0.6),
+            width: 3.0,
+          ),
+        ),
+        child: AppBar(
+          backgroundColor: widget.theme.colorScheme.primary.withOpacity(0.7),
+          title: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 8.0),
+                  child: TextField(
+                    controller: textFieldController,
+                    cursorColor: widget.theme.colorScheme.onPrimary,
+                    style: TextStyle(color: widget.theme.colorScheme.onPrimary),
+                    onChanged: (text) {
+                      appState.fetchCitySuggestions(text);
+                      showOverlay(context);
                     },
-                    icon: Icon(Icons.clear,
-                        color: widget.theme.colorScheme.onPrimary),
+                    onSubmitted: (text) async {
+                      await appState.fetchWeatherForCity(text);
+                      if (overlayEntry != null) {
+                        overlayEntry?.remove();
+                        overlayEntry = null;
+                      }
+                    },
+                    decoration: InputDecoration(
+                      hintText: 'Search location',
+                      hintStyle:
+                          TextStyle(color: widget.theme.colorScheme.onPrimary),
+                      prefixIcon: Icon(Icons.search,
+                          color: widget.theme.colorScheme.onPrimary),
+                      suffixIcon: IconButton(
+                        onPressed: () {
+                          textFieldController.clear();
+                          overlayEntry?.remove();
+                          overlayEntry = null;
+                        },
+                        icon: Icon(Icons.clear,
+                            color: widget.theme.colorScheme.onPrimary),
+                      ),
+                    ),
                   ),
                 ),
               ),
-            ),
+              IconButton(
+                onPressed: () async {
+                  await appState.updateWeatherForCurrentLocation();
+                  textFieldController.clear();
+                },
+                icon: Icon(
+                  Icons.gps_fixed_rounded,
+                  color: widget.theme.colorScheme.onPrimary,
+                ),
+              ),
+            ],
           ),
-          IconButton(
-            onPressed: () async {
-              await appState.updateWeatherForCurrentLocation();
-              textFieldController.clear();
-            },
-            icon: Icon(
-              Icons.gps_fixed_rounded,
-              color: widget.theme.colorScheme.onPrimary,
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }

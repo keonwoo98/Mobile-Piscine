@@ -43,16 +43,34 @@ class WeatherHomePage extends StatelessWidget {
       length: 3,
       initialIndex: 0,
       child: Scaffold(
-        appBar: MyAppBar(theme: Theme.of(context)),
-        body: const TabBarView(
-          physics: BouncingScrollPhysics(),
+        extendBody: true,
+        body: Stack(
           children: [
-            TabContent(title: 'Currently'),
-            TabContent(title: 'Today'),
-            TabContent(title: 'Weekly'),
+            Container(
+              decoration: const BoxDecoration(
+                image: DecorationImage(
+                  image: AssetImage("assets/background.jpeg"),
+                  fit: BoxFit.cover,
+                ),
+              ),
+              child: const TabBarView(
+                physics: BouncingScrollPhysics(),
+                children: [
+                  TabContent(title: 'Currently'),
+                  TabContent(title: 'Today'),
+                  TabContent(title: 'Weekly'),
+                ],
+              ),
+            ),
+            Positioned(
+              top: -5,
+              left: 10,
+              right: 10,
+              child: MyAppBar(theme: Theme.of(context)),
+            ),
           ],
         ),
-        bottomNavigationBar: const MyBottomAppBar(),
+        bottomNavigationBar: MyBottomAppBar(theme: Theme.of(context)),
       ),
     );
   }
