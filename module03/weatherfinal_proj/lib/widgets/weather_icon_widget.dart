@@ -1,17 +1,12 @@
 import 'package:flutter/material.dart';
 
-class WeatherIcon extends StatelessWidget {
+class WeatherIconWidget extends StatelessWidget {
   final int weatherCode;
-  final double size;
-
-  const WeatherIcon({super.key, required this.weatherCode, this.size = 24.0});
+  const WeatherIconWidget({Key? key, required this.weatherCode})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Icon(_getWeatherIconData(), size: size);
-  }
-
-  IconData _getWeatherIconData() {
     IconData iconData;
     switch (weatherCode) {
       case 0: // Clear sky
@@ -68,6 +63,6 @@ class WeatherIcon extends StatelessWidget {
         iconData = Icons.error; // 일치하는 날씨 코드가 없을 경우 기본 아이콘
     }
 
-    return iconData; // '24'는 아이콘 크기로, 원하는 크기를 지정하세요.
+    return Icon(iconData, size: 42);
   }
 }
