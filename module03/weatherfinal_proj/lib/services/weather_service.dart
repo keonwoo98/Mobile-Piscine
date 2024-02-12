@@ -78,13 +78,9 @@ class WeatherService {
 
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
-      // final Map<String, double> current = data['current_weather'];
       Map<String, dynamic> apiResponse = data['current_weather'];
       CurrentWeather currentWeather = CurrentWeather.fromJson(apiResponse);
-      // final String weatherDescription =
-      //     WeatherCodeInterpretation(current['weathercode']).getter();
       return currentWeather;
-      // return '${current['temperature']}°C\n$weatherDescription\n${current['windspeed']} km/h';
     } else {
       throw Exception('Failed to load weather data');
     }
@@ -98,19 +94,8 @@ class WeatherService {
 
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
-      // final hourly = data['hourly'];
       Map<String, dynamic> apiResponse = data['hourly'];
       TodayWeather todayWeather = TodayWeather.fromJson(apiResponse);
-
-      // final List<String> weatherToday =
-      //     List.generate(hourly['time'].length, (index) {
-      //   final rawTime = hourly['time'][index];
-      //   final formattedTime = rawTime.substring(rawTime.indexOf('T') + 1);
-      //   final String weatherDescription =
-      //       WeatherCodeInterpretation(hourly['weathercode'][index]).getter();
-      //   return '$formattedTime\t\t\t\t${hourly['temperature_2m'][index]}°C\t\t\t\t$weatherDescription\t\t\t${hourly['windspeed_10m'][index]}km/h';
-      // });
-      // return weatherToday.join('\n');
       return todayWeather;
     } else {
       throw Exception('Failed to load today\'s weather data');
@@ -125,18 +110,8 @@ class WeatherService {
 
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
-      // final daily = data['daily'];
       Map<String, dynamic> apiResponse = data['daily'];
       WeekWeather weekWeather = WeekWeather.fromJson(apiResponse);
-      // final List<String> weatherWeekly =
-      //     List.generate(daily['time'].length, (index) {
-      //   final rawTime = daily['time'][index];
-      //   final formattedDay = rawTime;
-      //   final String weatherDescription =
-      //       WeatherCodeInterpretation(daily['weathercode'][index]).getter();
-      //   return '$formattedDay\t\t\t\t\t\t${daily['temperature_2m_min'][index]}°C\t\t\t\t\t\t${daily['temperature_2m_max'][index]}°C\t\t\t\t\t\t$weatherDescription';
-      // });
-      // return weatherWeekly.join('\n');
       return weekWeather;
     } else {
       throw Exception('Failed to load weekly weather data');

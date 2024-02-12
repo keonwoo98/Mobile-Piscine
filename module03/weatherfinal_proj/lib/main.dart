@@ -4,7 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:weatherfinal_proj/providers/myappstate.dart';
 import 'package:weatherfinal_proj/widgets/myappbar.dart';
 import 'package:weatherfinal_proj/widgets/mybottomappbar.dart';
-import 'package:weatherfinal_proj/screens/tab_content.dart';
+import 'package:weatherfinal_proj/screens/tab_contents.dart';
 
 void main() async {
   runApp(const MyApp());
@@ -49,7 +49,7 @@ class WeatherHomePage extends StatelessWidget {
             Container(
               decoration: const BoxDecoration(
                 image: DecorationImage(
-                  image: AssetImage("assets/background.jpeg"),
+                  image: AssetImage("assets/background.png"),
                   fit: BoxFit.cover,
                 ),
               ),

@@ -10,12 +10,10 @@ class WeatherIconWidget extends StatelessWidget {
     IconData iconData;
     switch (weatherCode) {
       case 0: // Clear sky
-        iconData = Icons.wb_sunny;
-        break;
       case 1: // Mainly clear
-      case 2: // Partly cloudy
-        iconData = Icons.wb_cloudy;
+        iconData = Icons.sunny;
         break;
+      case 2: // Partly cloudy
       case 3: // Overcast
         iconData = Icons.cloud;
         break;
@@ -35,20 +33,16 @@ class WeatherIconWidget extends StatelessWidget {
         break;
       case 66: // Freezing Rain: Light Intensity
       case 67: // Freezing Rain: Heavy
-        iconData = Icons.ac_unit;
-        break;
       case 71: // Snow fall: Slight
       case 73: // Snow fall: Moderate
       case 75: // Snow fall: Heavy
-        iconData = Icons.ac_unit;
-        break;
       case 77: // Snow grains
         iconData = Icons.ac_unit;
         break;
       case 80: // Rain showers: Slight Intensity
       case 81: // Rain showers: Moderate
       case 82: // Rain showers: Violent
-        iconData = Icons.shower;
+        iconData = Icons.umbrella;
         break;
       case 85: // Snow showers: slight
       case 86: // Snow showers: heavy
@@ -60,7 +54,7 @@ class WeatherIconWidget extends StatelessWidget {
         iconData = Icons.flash_on;
         break;
       default:
-        iconData = Icons.error; // 일치하는 날씨 코드가 없을 경우 기본 아이콘
+        iconData = Icons.error;
     }
 
     return Icon(iconData, size: 42);
