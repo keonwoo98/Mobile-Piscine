@@ -49,7 +49,7 @@ class WeatherHomePage extends StatelessWidget {
             Container(
               decoration: const BoxDecoration(
                 image: DecorationImage(
-                  image: AssetImage("assets/background.png"),
+                  image: AssetImage("assets/background.jpeg"),
                   fit: BoxFit.cover,
                 ),
               ),
