@@ -88,10 +88,10 @@ class TabContent extends StatelessWidget {
           iconData = Icons.flash_on;
           break;
         default:
-          iconData = Icons.error; // 일치하는 날씨 코드가 없을 경우 기본 아이콘
+          iconData = Icons.error;
       }
 
-      return Icon(iconData, size: 24); // '24'는 아이콘 크기로, 원하는 크기를 지정하세요.
+      return Icon(iconData, size: 24, color: Colors.white);
     }
 
     Widget currentWeatherInfo() {
@@ -116,7 +116,7 @@ class TabContent extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Icon(Icons.air, size: 24),
+              const Icon(Icons.air, size: 24, color: Colors.blue),
               Text(' ${appState.currentWeather?.windspeed} km/h',
                   style: windStyle),
             ],
@@ -127,13 +127,11 @@ class TabContent extends StatelessWidget {
 
     Widget hourlyWeatherInfo() {
       return SizedBox(
-        height: 120, // 스크롤 가능한 리스트의 높이를 설정합니다.
+        height: 120,
         child: ListView.builder(
-          scrollDirection: Axis.horizontal, // 가로 스크롤을 활성화합니다.
-          itemCount: appState
-              .todayWeather?.time.length, // 데이터 개수에 맞춰 itemCount를 설정합니다.
+          scrollDirection: Axis.horizontal,
+          itemCount: appState.todayWeather?.time.length,
           itemBuilder: (context, index) {
-            // 여기서 각 시간별 날씨 정보를 어떻게 표시할지 정의합니다.
             final dateTime = DateTime.parse(appState.todayWeather?.time[index]);
             final time = DateFormat('HH:mm').format(dateTime);
             final temperature =
@@ -143,18 +141,16 @@ class TabContent extends StatelessWidget {
                 appState.todayWeather!.windspeed10m[index]?.toStringAsFixed(1);
 
             return Padding(
-              padding: const EdgeInsets.symmetric(
-                  horizontal: 8.0), // 좌우로 8의 패딩을 추가합니다.
+              padding: const EdgeInsets.symmetric(horizontal: 8.0),
               child: Column(
                 children: [
-                  Text(time, style: theme.textTheme.bodyMedium), // 시간 표시
-                  const SizedBox(height: 4), // 요소 사이의 세로 간격을 추가합니다.
+                  Text(time, style: theme.textTheme.bodyMedium),
+                  const SizedBox(height: 4),
                   weatherIconWidget(iconCode),
-                  const SizedBox(height: 4), // 요소 사이의 세로 간격을 추가합니다.
-                  Text('$temperature°C', style: descStyle), // 온도 표시
-                  const SizedBox(height: 4), // 요소 사이의 세로 간격을 추가합니다.
-                  Text('$windspeed km/h',
-                      style: theme.textTheme.bodySmall), // 풍속 표시
+                  const SizedBox(height: 4),
+                  Text('$temperature°C', style: descStyle),
+                  const SizedBox(height: 4),
+                  Text('$windspeed km/h', style: theme.textTheme.bodySmall),
                 ],
               ),
             );
@@ -164,10 +160,8 @@ class TabContent extends StatelessWidget {
     }
 
     Widget todayWeatherInfo() {
-      // appState.todayWeather가 null인 경우를 대비하여 기본값으로 빈 리스트를 제공합니다.
       List<FlSpot> spots = (appState.todayWeather != null)
           ? List.generate(appState.todayWeather!.time.length, (index) {
-              // null을 허용하지 않는 todayWeather로부터 값을 가져옵니다.
               String? timeString = appState.todayWeather!.time[index];
               String? temperatureString =
                   appState.todayWeather!.temperature2m[index]?.toString();
@@ -181,7 +175,7 @@ class TabContent extends StatelessWidget {
 
               return FlSpot(hour, temp);
             })
-          : []; // todayWeather가 null인 경우 빈 spots 리스트를 사용합니다.
+          : [];
 
       Widget bottomTitleWidgets(double value, TitleMeta meta) {
         const style = TextStyle(
@@ -199,7 +193,6 @@ class TabContent extends StatelessWidget {
           return Container();
         }
 
-        // 그렇지 않으면 시간 포맷을 사용하여 텍스트 위젯을 반환
         Widget text = Text(
           DateFormat('HH:mm').format(DateTime(0, 0, 0, value.toInt())),
           style: style,
@@ -325,11 +318,11 @@ class TabContent extends StatelessWidget {
             FlSpot(i.toDouble(), appState.weeklyWeather?.temperature2mMax[i]));
       }
       double? minY = appState.weeklyWeather?.temperature2mMin
-          .map((e) => e as double) // List<dynamic>을 List<double>로 변환합니다.
-          .reduce(min); // 주간 최소 온도
+          .map((e) => e as double)
+          .reduce(min);
       double? maxY = appState.weeklyWeather?.temperature2mMax
-          .map((e) => e as double) // List<dynamic>을 List<double>로 변환합니다.
-          .reduce(max); // 주간 최대 온도
+          .map((e) => e as double)
+          .reduce(max);
       LineChartData chartData = LineChartData(
         titlesData: FlTitlesData(
           rightTitles: const AxisTitles(
@@ -386,8 +379,8 @@ class TabContent extends StatelessWidget {
         ),
         minX: -0.3,
         maxX: 6.3,
-        minY: minY != null ? minY - 1.5 : minY, // 주간 최소 온도
-        maxY: maxY != null ? maxY + 1.5 : maxY, // 주간 최대 온도
+        minY: minY != null ? minY - 1.5 : minY,
+        maxY: maxY != null ? maxY + 1.5 : maxY,
         lineBarsData: [
           LineChartBarData(
             spots: minTempSpots,
@@ -428,17 +421,14 @@ class TabContent extends StatelessWidget {
         ],
       );
 
-      // 그래프 아래에 최소 온도와 최대 온도 정보를 표시하는 위젯
       Widget legendWidget() {
         return const Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            // 최소 온도 아이콘과 텍스트
             Icon(Icons.timeline, color: Colors.blue),
             SizedBox(width: 8),
             Text('Min temperature'),
-            SizedBox(width: 20), // 아이콘과 텍스트 사이의 간격 조정
-            // 최대 온도 아이콘과 텍스트
+            SizedBox(width: 20),
             Icon(Icons.timeline, color: Colors.red),
             SizedBox(width: 8),
             Text('Max temperature'),
@@ -446,13 +436,12 @@ class TabContent extends StatelessWidget {
         );
       }
 
-      // 주간 날씨 리스트를 만드는 ListView.builder
       Widget weeklyListView() {
         return SizedBox(
           height: 120,
           child: ListView.builder(
             scrollDirection: Axis.horizontal,
-            itemCount: 7, // 7일간의 날씨 데이터
+            itemCount: 7,
             itemBuilder: (context, index) {
               final dateTime =
                   DateTime.parse(appState.weeklyWeather?.time[index]);
@@ -463,14 +452,13 @@ class TabContent extends StatelessWidget {
                   appState.weeklyWeather?.weathercode[index];
 
               return Padding(
-                padding: const EdgeInsets.symmetric(
-                    horizontal: 8.0), // 좌우로 8의 패딩을 추가합니다.
+                padding: const EdgeInsets.symmetric(horizontal: 8.0),
                 child: Column(
                   children: [
-                    Text(weekday, style: theme.textTheme.bodyMedium), // 시간 표시
-                    const SizedBox(height: 4), // 요소 사이의 세로 간격을 추가합니다.
+                    Text(weekday, style: theme.textTheme.bodyMedium),
+                    const SizedBox(height: 4),
                     weatherIconWidget(weatherCondition),
-                    const SizedBox(height: 4), // 요소 사이의 세로 간격을 추가합니다.
+                    const SizedBox(height: 4),
                     Text('$maxTemp°C max'),
                     const SizedBox(height: 4),
                     Text('$minTemp°C min'),
@@ -497,7 +485,7 @@ class TabContent extends StatelessWidget {
             ),
           ),
           SizedBox(
-            height: 300, // 차트의 높이
+            height: 300,
             child: LineChart(chartData),
           ),
           legendWidget(),
