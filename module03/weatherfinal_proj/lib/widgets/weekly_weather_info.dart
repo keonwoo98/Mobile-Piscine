@@ -162,8 +162,8 @@ class WeeklyWeatherInfo extends StatelessWidget {
             final dateTime =
                 DateTime.parse(appState.weeklyWeather?.time[index]);
             final weekday = DateFormat('dd/MM').format(dateTime);
-            final minTemp = appState.weeklyWeather?.temperature2mMax[index];
-            final maxTemp = appState.weeklyWeather?.temperature2mMin[index];
+            final maxTemp = appState.weeklyWeather?.temperature2mMax[index];
+            final minTemp = appState.weeklyWeather?.temperature2mMin[index];
             final weatherCondition = appState.weeklyWeather?.weathercode[index];
             const style = TextStyle(fontSize: 14, fontWeight: FontWeight.bold);
 
@@ -175,9 +175,9 @@ class WeeklyWeatherInfo extends StatelessWidget {
                   const SizedBox(height: 4),
                   WeatherIconWidget(weatherCode: weatherCondition),
                   const SizedBox(height: 4),
-                  Text('$maxTemp°C max', style: style),
-                  const SizedBox(height: 4),
                   Text('$minTemp°C min', style: style),
+                  const SizedBox(height: 4),
+                  Text('$maxTemp°C max', style: style),
                   const SizedBox(height: 4),
                 ],
               ),
@@ -193,7 +193,7 @@ class WeeklyWeatherInfo extends StatelessWidget {
         const LocationWidget(),
         const SizedBox(height: 14),
         const Text(
-          'Weekly Temperature Forecast',
+          'Weekly Temperature',
           style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.bold,
