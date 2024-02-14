@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
 import 'package:weatherfinal_proj/providers/myappstate.dart';
 import 'package:weatherfinal_proj/widgets/myappbar.dart';
 import 'package:weatherfinal_proj/widgets/mybottomappbar.dart';
@@ -18,7 +17,7 @@ class MyApp extends StatelessWidget {
     return ChangeNotifierProvider(
       create: (context) => MyAppState(),
       child: MaterialApp(
-        title: 'mobileModule02/weatherAppV2_proj',
+        title: 'mobileModule02/weatherfinal_proj',
         theme: ThemeData(
           colorScheme: ColorScheme.fromSeed(
             seedColor: Colors.deepPurple,
