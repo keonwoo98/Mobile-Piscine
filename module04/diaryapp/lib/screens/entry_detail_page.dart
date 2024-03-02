@@ -13,12 +13,12 @@ class EntryDetailPage extends StatefulWidget {
 }
 
 class _EntryDetailPageState extends State<EntryDetailPage> {
-  late Entry _currentEntry; // 현재 페이지의 Entry 상태를 관리하는 변수
+  late Entry _currentEntry;
 
   @override
   void initState() {
     super.initState();
-    _currentEntry = widget.entry; // widget.entry의 값을 _currentEntry에 복사
+    _currentEntry = widget.entry;
   }
 
   @override
@@ -34,7 +34,6 @@ class _EntryDetailPageState extends State<EntryDetailPage> {
           IconButton(
             icon: const Icon(Icons.edit),
             onPressed: () async {
-              // 수정 페이지로 이동하고, 수정된 Entry 객체를 받습니다.
               final modifiedEntry = await Navigator.push<Entry>(
                 context,
                 MaterialPageRoute(
@@ -42,7 +41,6 @@ class _EntryDetailPageState extends State<EntryDetailPage> {
                 ),
               );
 
-              // 수정된 Entry 객체로 현재 상태 업데이트
               if (modifiedEntry != null) {
                 setState(() {
                   _currentEntry = modifiedEntry;
@@ -53,11 +51,9 @@ class _EntryDetailPageState extends State<EntryDetailPage> {
         ],
       ),
       body: SingleChildScrollView(
-        // 긴 텍스트에 대응하기 위해 SingleChildScrollView 추가
         child: Padding(
           padding: const EdgeInsets.all(16),
           child: Card(
-            // Material 디자인 카드 사용
             child: Padding(
               padding: const EdgeInsets.all(16),
               child: Column(
@@ -67,7 +63,7 @@ class _EntryDetailPageState extends State<EntryDetailPage> {
                     formattedDate,
                     style: const TextStyle(
                       fontSize: 18,
-                      color: Colors.grey, // 날짜 색상 조정
+                      color: Colors.grey,
                     ),
                   ),
                   const SizedBox(height: 20),
@@ -80,7 +76,7 @@ class _EntryDetailPageState extends State<EntryDetailPage> {
                       ),
                       const SizedBox(width: 10),
                       Text(
-                        widget.entry.feeling.iconName, // 감정 이름 표시
+                        widget.entry.feeling.iconName,
                         style: TextStyle(
                           fontSize: 18,
                           color: widget.entry.feeling.getColor(),
@@ -93,7 +89,7 @@ class _EntryDetailPageState extends State<EntryDetailPage> {
                     widget.entry.text,
                     style: const TextStyle(
                       fontSize: 16,
-                      fontWeight: FontWeight.bold, // 텍스트 스타일 조정
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
                 ],
