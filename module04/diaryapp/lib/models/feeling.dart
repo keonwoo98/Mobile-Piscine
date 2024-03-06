@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
 
 class Feeling {
-  String iconName;
-  Feeling({required this.iconName});
-
-  IconData getIcon() {
+  static IconData getIcon(String iconName) {
     switch (iconName) {
       case 'dissatisfied':
         return Icons.sentiment_dissatisfied_outlined;
@@ -21,7 +18,7 @@ class Feeling {
     }
   }
 
-  Color getColor() {
+  static Color getColor(String iconName) {
     switch (iconName) {
       case 'dissatisfied':
         return Colors.orange;
@@ -35,23 +32,6 @@ class Feeling {
         return Colors.blue;
       default:
         return Colors.yellow;
-    }
-  }
-
-  static Feeling fromIconName(String iconName) {
-    switch (iconName) {
-      case 'dissatisfied':
-        return Feeling(iconName: iconName); // 여기에 필요한 아이콘 등을 추가
-      case 'very_dissatisfied':
-        return Feeling(iconName: iconName);
-      case 'neutral':
-        return Feeling(iconName: iconName);
-      case 'satisfied':
-        return Feeling(iconName: iconName);
-      case 'very_satisfied':
-        return Feeling(iconName: iconName);
-      default:
-        return Feeling(iconName: 'neutral'); // 기본값 설정
     }
   }
 }
