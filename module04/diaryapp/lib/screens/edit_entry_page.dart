@@ -17,50 +17,38 @@ class _EditEntryPageState extends State<EditEntryPage> {
   late String _title;
   late String _text;
   late String _selectedFeeling;
-  final List<Feeling> _feelings = [
-    Feeling(iconName: "dissatisfied"),
-    Feeling(iconName: "very_dissatisfied"),
-    Feeling(iconName: "neutral"),
-    Feeling(iconName: "satisfied"),
-    Feeling(iconName: "very_satisfied"),
-  ];
 
   @override
   void initState() {
     super.initState();
     _title = widget.entry.title;
     _text = widget.entry.text;
-    _selectedFeeling = widget.entry.feeling.iconName;
+    _selectedFeeling = widget.entry.icon;
   }
 
   Future<void> _updateEntry() async {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
 
-      // Firestore에 업데이트
       await FirebaseFirestore.instance
           .collection('diary_entries')
           .doc(widget.entry.id)
           .update({
         'title': _title,
         'text': _text,
-        'feeling': _selectedFeeling, // Firestore에는 업데이트가 반영됨
+        'icon': _selectedFeeling,
       });
 
-      // 수정된 Entry 객체 생성
       Entry modifiedEntry = Entry(
         id: widget.entry.id,
         title: _title,
         text: _text,
         date: widget.entry.date,
         userMail: widget.entry.userMail,
-        icon: _selectedFeeling, // 여기서 icon을 _selectedFeeling으로 설정
-        feeling: _feelings.firstWhere((feeling) =>
-            feeling.iconName == _selectedFeeling), // 새로운 Feeling 객체 생성
+        icon: _selectedFeeling,
       );
-
       if (mounted) {
-        Navigator.pop(context, modifiedEntry); // 수정된 Entry 객체를 반환
+        Navigator.pop(context, modifiedEntry);
       }
     }
   }
@@ -69,7 +57,7 @@ class _EditEntryPageState extends State<EditEntryPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Edit Entry"),
+        title: const Text('Edit Entry'),
       ),
       body: Form(
         key: _formKey,
@@ -77,7 +65,7 @@ class _EditEntryPageState extends State<EditEntryPage> {
           padding: const EdgeInsets.all(16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
+            children: [
               TextFormField(
                 initialValue: _title,
                 decoration: const InputDecoration(
@@ -93,26 +81,32 @@ class _EditEntryPageState extends State<EditEntryPage> {
               const SizedBox(height: 20),
               DropdownButtonFormField<String>(
                 decoration: const InputDecoration(
-                    labelText: 'Select a feeling',
-                    border: OutlineInputBorder()),
+                  labelText: 'Select a feeling',
+                  border: OutlineInputBorder(),
+                ),
                 value: _selectedFeeling,
                 onChanged: (String? newValue) {
                   setState(() {
                     _selectedFeeling = newValue!;
                   });
                 },
-                items:
-                    _feelings.map<DropdownMenuItem<String>>((Feeling feeling) {
+                items: [
+                  'very_dissatisfied',
+                  'dissatisfied',
+                  'neutral',
+                  'satisfied',
+                  'very_satisfied'
+                ].map<DropdownMenuItem<String>>((String feeling) {
                   return DropdownMenuItem<String>(
-                    value: feeling.iconName,
+                    value: feeling,
                     child: Row(
                       children: [
                         Icon(
-                          feeling.getIcon(),
-                          color: feeling.getColor(),
+                          Feeling.getIcon(feeling),
+                          color: Feeling.getColor(feeling),
                         ),
                         const SizedBox(width: 10),
-                        Text(feeling.iconName)
+                        Text(feeling.replaceAll('_', ' ').capitalize()),
                       ],
                     ),
                   );
@@ -127,7 +121,6 @@ class _EditEntryPageState extends State<EditEntryPage> {
                 onSaved: (value) => _text = value!,
               ),
               const SizedBox(height: 20),
-              // 여기에 감정을 선택할 수 있는 DropdownButtonFormField 추가
               ElevatedButton(
                 onPressed: _updateEntry,
                 child: const Text('Save Changes'),
@@ -137,5 +130,11 @@ class _EditEntryPageState extends State<EditEntryPage> {
         ),
       ),
     );
+  }
+}
+
+extension StringExtension on String {
+  String capitalize() {
+    return "${this[0].toUpperCase()}${substring(1)}";
   }
 }

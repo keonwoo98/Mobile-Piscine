@@ -17,13 +17,6 @@ class _EntryCreationPageState extends State<EntryCreationPage> {
   String _text = '';
   final DateTime _date = DateTime.now();
   String _selectedFeeling = "neutral";
-  final List<Feeling> _feelings = [
-    Feeling(iconName: "dissatisfied"),
-    Feeling(iconName: "very_dissatisfied"),
-    Feeling(iconName: "neutral"),
-    Feeling(iconName: "satisfied"),
-    Feeling(iconName: "very_satisfied"),
-  ];
 
   Future<void> _saveEntry() async {
     if (_formKey.currentState!.validate()) {
@@ -35,8 +28,6 @@ class _EntryCreationPageState extends State<EntryCreationPage> {
         userMail: FirebaseAuth.instance.currentUser!.email!,
         id: '',
         icon: _selectedFeeling,
-        feeling: _feelings
-            .firstWhere((feeling) => feeling.iconName == _selectedFeeling),
       );
 
       await FirebaseFirestore.instance
@@ -69,26 +60,32 @@ class _EntryCreationPageState extends State<EntryCreationPage> {
               const SizedBox(height: 20),
               DropdownButtonFormField<String>(
                 decoration: const InputDecoration(
-                    labelText: 'Select a feeling',
-                    border: OutlineInputBorder()),
+                  labelText: 'Select a feeling',
+                  border: OutlineInputBorder(),
+                ),
                 value: _selectedFeeling,
                 onChanged: (String? newValue) {
                   setState(() {
                     _selectedFeeling = newValue!;
                   });
                 },
-                items:
-                    _feelings.map<DropdownMenuItem<String>>((Feeling feeling) {
+                items: [
+                  'very_dissatisfied',
+                  'dissatisfied',
+                  'neutral',
+                  'satisfied',
+                  'very_satisfied'
+                ].map<DropdownMenuItem<String>>((String feeling) {
                   return DropdownMenuItem<String>(
-                    value: feeling.iconName,
+                    value: feeling,
                     child: Row(
                       children: [
                         Icon(
-                          feeling.getIcon(),
-                          color: feeling.getColor(),
+                          Feeling.getIcon(feeling),
+                          color: Feeling.getColor(feeling),
                         ),
                         const SizedBox(width: 10),
-                        Text(feeling.iconName)
+                        Text(feeling.replaceAll('_', ' ').capitalize()),
                       ],
                     ),
                   );
@@ -111,5 +108,11 @@ class _EntryCreationPageState extends State<EntryCreationPage> {
         ),
       ),
     );
+  }
+}
+
+extension StringExtension on String {
+  String capitalize() {
+    return "${this[0].toUpperCase()}${substring(1)}";
   }
 }
