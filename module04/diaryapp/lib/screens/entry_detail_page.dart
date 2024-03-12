@@ -1,3 +1,4 @@
+import 'package:diaryapp/models/feeling.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:diaryapp/screens/edit_entry_page.dart';
@@ -23,14 +24,13 @@ class _EntryDetailPageState extends State<EntryDetailPage> {
 
   @override
   Widget build(BuildContext context) {
-    final formattedDate =
-        DateFormat('yyyy년 MM월 dd일').format(_currentEntry.date);
+    final formattedDate = DateFormat('yyyy-MM-dd').format(_currentEntry.date);
 
     return Scaffold(
       appBar: AppBar(
         title: Text(_currentEntry.title),
         backgroundColor: Colors.deepPurpleAccent,
-        actions: <Widget>[
+        actions: [
           IconButton(
             icon: const Icon(Icons.edit),
             onPressed: () async {
@@ -70,23 +70,23 @@ class _EntryDetailPageState extends State<EntryDetailPage> {
                   Row(
                     children: [
                       Icon(
-                        widget.entry.feeling.getIcon(),
-                        color: widget.entry.feeling.getColor(),
+                        Feeling.getIcon(_currentEntry.icon),
+                        color: Feeling.getColor(_currentEntry.icon),
                         size: 24,
                       ),
                       const SizedBox(width: 10),
                       Text(
-                        widget.entry.feeling.iconName,
+                        _currentEntry.icon,
                         style: TextStyle(
                           fontSize: 18,
-                          color: widget.entry.feeling.getColor(),
+                          color: Feeling.getColor(_currentEntry.icon),
                         ),
                       ),
                     ],
                   ),
                   const SizedBox(height: 20),
                   Text(
-                    widget.entry.text,
+                    _currentEntry.text,
                     style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
