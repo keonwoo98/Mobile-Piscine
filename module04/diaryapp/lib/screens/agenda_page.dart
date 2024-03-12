@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
+import 'package:intl/intl.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:diaryapp/screens/entry_detail_page.dart';
-import 'package:diaryapp/models/entry.dart';
+import 'package:diaryapp/widgets/entries_list.dart';
 
 class AgendaPage extends StatefulWidget {
   const AgendaPage({Key? key}) : super(key: key);
@@ -13,9 +13,13 @@ class AgendaPage extends StatefulWidget {
 }
 
 class _AgendaPageState extends State<AgendaPage> {
-  late CalendarFormat _calendarFormat = CalendarFormat.month;
+  CalendarFormat _calendarFormat = CalendarFormat.month;
   DateTime _focusedDay = DateTime.now();
-  DateTime? _selectedDay;
+
+  String formatTimestamp(Timestamp timestamp) {
+    DateTime dateTime = timestamp.toDate();
+    return DateFormat('yyyy-MM-dd').format(dateTime);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -26,19 +30,18 @@ class _AgendaPageState extends State<AgendaPage> {
       body: Column(
         children: [
           TableCalendar(
-            firstDay: DateTime.utc(2010, 10, 16),
+            firstDay: DateTime.utc(2024, 1, 1),
             lastDay: DateTime.utc(2030, 3, 14),
             focusedDay: _focusedDay,
             calendarFormat: _calendarFormat,
             selectedDayPredicate: (day) {
-              return isSameDay(_selectedDay, day);
+              return isSameDay(_focusedDay, day);
             },
             onDaySelected: (selectedDay, focusedDay) {
               setState(() {
-                _selectedDay = selectedDay;
-                _focusedDay = focusedDay; // 이 부분을 추가해야 캘린더가 올바르게 작동합니다.
+                _focusedDay = DateTime(
+                    selectedDay.year, selectedDay.month, selectedDay.day);
               });
-              // 선택된 날짜에 해당하는 일기 목록을 표시하는 기능을 여기에 구현합니다.
             },
             onFormatChanged: (format) {
               if (_calendarFormat != format) {
@@ -48,43 +51,25 @@ class _AgendaPageState extends State<AgendaPage> {
               }
             },
             onPageChanged: (focusedDay) {
-              _focusedDay = focusedDay;
+              setState(() {
+                _focusedDay = focusedDay;
+              });
             },
           ),
           Expanded(
-            child: StreamBuilder(
-              stream: FirebaseFirestore.instance
+            child: EntriesList(
+              entryStream: FirebaseFirestore.instance
                   .collection('diary_entries')
                   .where('userMail',
                       isEqualTo: FirebaseAuth.instance.currentUser?.email)
                   .where('date',
-                      isEqualTo:
-                          _selectedDay) // Firestore에서 날짜 필터링 방식에 따라 적절히 조정 필요
+                      isGreaterThanOrEqualTo: DateTime(
+                          _focusedDay.year, _focusedDay.month, _focusedDay.day))
+                  .where('date',
+                      isLessThan: DateTime(_focusedDay.year, _focusedDay.month,
+                          _focusedDay.day + 1))
                   .snapshots(),
-              builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(child: CircularProgressIndicator());
-                }
-
-                if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-                  return const Center(
-                      child: Text('No entries found for this day'));
-                }
-
-                return ListView.builder(
-                  itemCount: snapshot.data!.docs.length,
-                  itemBuilder: (context, index) {
-                    var doc = snapshot.data!.docs[index];
-                    var entry = Entry.fromSnapshot(doc);
-                    return ListTile(
-                      title: Text(entry.title),
-                      subtitle: Text(entry.text), // 간략한 내용 표시
-                      onTap: () => Navigator.of(context).push(MaterialPageRoute(
-                          builder: (context) => EntryDetailPage(entry: entry))),
-                    );
-                  },
-                );
-              },
+              isScrollable: true,
             ),
           ),
         ],
