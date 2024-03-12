@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:diaryapp/models/entry.dart';
-import 'package:diaryapp/models/feeling.dart'; // Feeling 모델을 사용하기 위해 추가
+import 'package:diaryapp/models/feeling.dart';
 import 'package:diaryapp/screens/entry_detail_page.dart';
 import 'package:intl/intl.dart';
 
