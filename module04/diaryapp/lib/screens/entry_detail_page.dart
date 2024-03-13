@@ -1,6 +1,7 @@
 import 'package:diaryapp/models/feeling.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:diaryapp/screens/edit_entry_page.dart';
 import 'package:diaryapp/models/entry.dart';
 
@@ -20,6 +21,16 @@ class _EntryDetailPageState extends State<EntryDetailPage> {
   void initState() {
     super.initState();
     _currentEntry = widget.entry;
+  }
+
+  Future<void> deleteEntry() async {
+    await FirebaseFirestore.instance
+        .collection('diary_entries')
+        .doc(_currentEntry.id)
+        .delete();
+    if (mounted) {
+      Navigator.pop(context);
+    }
   }
 
   @override
@@ -97,6 +108,37 @@ class _EntryDetailPageState extends State<EntryDetailPage> {
             ),
           ),
         ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: Colors.red,
+        onPressed: () {
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                title: const Text('Delete entry'),
+                content:
+                    const Text('Are you sure you want to delete this entry?'),
+                actions: [
+                  TextButton(
+                    child: const Text('Cancel'),
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                  TextButton(
+                    child: const Text('Delete'),
+                    onPressed: () {
+                      deleteEntry();
+                      Navigator.pop(context);
+                    },
+                  ),
+                ],
+              );
+            },
+          );
+        },
+        child: const Icon(Icons.delete),
       ),
     );
   }
